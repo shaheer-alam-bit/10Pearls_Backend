@@ -1,11 +1,8 @@
 package com.example.contactmanager.Controllers;
 
-import com.example.contactmanager.DTO.ChangePasswordRequest;
-import com.example.contactmanager.DTO.LoginRequest;
-import com.example.contactmanager.DTO.LoginResponse;
+import com.example.contactmanager.DTO.*;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +21,9 @@ public class UserController
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> RegisterUser(@RequestBody User user)
+    public ResponseEntity<SignupResponse> RegisterUser(@RequestBody User user)
     {
-        userService.createUser(user);
-        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED); // Return success message with 201 status
+        return userService.createUser(user);
     }
 
     @PostMapping("/login")
@@ -46,7 +42,7 @@ public class UserController
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changeMyPassword(@RequestBody ChangePasswordRequest changePasswordRequest)
+    public ResponseEntity<ChangePasswordResponse> changeMyPassword(@RequestBody ChangePasswordRequest changePasswordRequest)
     {
         String email = changePasswordRequest.getEmail();
         String oldPassword = changePasswordRequest.getOldPassword();
