@@ -5,6 +5,7 @@ import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController
 {
     UserService userService;
@@ -19,6 +21,13 @@ public class UserController
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    //Testing API
+    @GetMapping("/data")
+    public ResponseEntity<String> getData() {
+        return ResponseEntity.ok("Hello from Spring Boot");
+    }
+    
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> RegisterUser(@RequestBody User user)

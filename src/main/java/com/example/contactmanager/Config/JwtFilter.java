@@ -64,7 +64,7 @@ public class JwtFilter extends OncePerRequestFilter
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            throw new InvalidJWTAuthenticationException("Invalid JWT Token");
+            System.out.println(e);
         }
     }
 }
