@@ -1,8 +1,6 @@
 package com.example.contactmanager.Controllers;
 
-import com.example.contactmanager.DTO.ContactCreateResponse;
-import com.example.contactmanager.DTO.ContactDetailResponse;
-import com.example.contactmanager.DTO.ContactListResponse;
+import com.example.contactmanager.DTO.*;
 import com.example.contactmanager.Model.ContactDetails;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.ContactDetailsService;
@@ -34,10 +32,10 @@ public class ContactDetailsController
     }
 
     @PostMapping("/getContactsById")
-    public ResponseEntity<ContactListResponse> getContactsByID(@RequestBody User user)
+    public ResponseEntity<ContactListResponse> getContactsByID(@RequestBody User user , @RequestParam(defaultValue = "0") int page)
     {
         Long id = user.getId();
-        return contactDetailsService.getContactsById(id);
+        return contactDetailsService.getContactsById(id,page);
     }
 
     @PostMapping("/deleteContact/{userId}")
@@ -54,10 +52,15 @@ public class ContactDetailsController
         return contactDetailsService.getAContact(id);
     }
 
-    @PostMapping("/findContactByName")
-    public ResponseEntity<ContactDetailResponse> findByName(@RequestBody ContactDetails contactDetails)
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponse> findByName(@RequestParam String name)
     {
-        String name = contactDetails.getFirstName();
         return contactDetailsService.findByFirstName(name);
+    }
+
+    @PostMapping("/updateContact/{contactId}")
+    public ResponseEntity<ContactUpdateResponse> contactUpdate (@PathVariable long contactId, @RequestBody UpdateContactRequest updateContactRequest)
+    {
+        return contactDetailsService.updateContact(contactId, updateContactRequest);
     }
 }

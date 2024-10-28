@@ -6,6 +6,7 @@ import com.example.contactmanager.DTO.LoginResponse;
 import com.example.contactmanager.DTO.SignupResponse;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService
 {
@@ -29,6 +31,7 @@ public class UserService
            String hashedPassword = passwordEncoder.encode(user.getPassword());
            user.setPassword(hashedPassword);
            userRepository.save(user);
+           log.info("New user created successfully");
            return new ResponseEntity<>(new SignupResponse("User Created Successfully",true), HttpStatus.CREATED);
     }
 
@@ -39,13 +42,16 @@ public class UserService
                         "User Not Found"
                 ));
         if (user == null) {
+            log.error("Email Not Found");
             return new ResponseEntity<>(new LoginResponse("Email does not exist",false), HttpStatus.NOT_FOUND);
         }
         else if (!passwordEncoder.matches(password, user.getPassword())) {
+            log.error("Wrong Password entered");
             return new ResponseEntity<>(new LoginResponse("Wrong password",false), HttpStatus.UNAUTHORIZED);
         }
         else {
             String generatedToken = jwtService.generateToken(user);
+            log.info("Logged In Successfully");
             return new ResponseEntity<>(new LoginResponse(generatedToken,"User logged in successfully",true), HttpStatus.OK);
         }
     }
@@ -60,16 +66,19 @@ public class UserService
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found"));
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            log.error("Old Password does not match");
             return new ResponseEntity<>(new ChangePasswordResponse("Wrong Old Password Entered",false), HttpStatus.UNAUTHORIZED);
         }
 
         if (!newPassword.equals(confirmPassword)) {
+            log.error("New Password does not match");
             return new ResponseEntity<>(new ChangePasswordResponse("Passwords do not match",false), HttpStatus.UNAUTHORIZED);
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
+        log.info("Password changed Successfully");
         return new ResponseEntity<>(new ChangePasswordResponse("Password Changed Successfully",true), HttpStatus.OK);
     }
 
