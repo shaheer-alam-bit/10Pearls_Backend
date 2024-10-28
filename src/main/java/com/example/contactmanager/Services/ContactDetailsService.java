@@ -48,7 +48,7 @@ public class ContactDetailsService
     {
         User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Pageable pageable = PageRequest.of(page, 4);
+        Pageable pageable = PageRequest.of(page, 5);
         Page<ContactDetails> contactPage = contactDetailsRepository.findByUserId(user_id, pageable);
 
         List<ContactDetails> usersSavedContacts = contactPage.getContent();

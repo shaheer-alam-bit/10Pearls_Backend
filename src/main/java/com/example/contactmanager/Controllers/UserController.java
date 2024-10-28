@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
@@ -44,11 +43,6 @@ public class UserController
         return userService.verifyUser(email,password);
     }
 
-    @GetMapping("/getAllUsers")
-    public ResponseEntity<List<User>> getAllUsers()
-    {
-        return userService.fetchAllUsers();
-    }
 
     @PostMapping("/changePassword")
     public ResponseEntity<ChangePasswordResponse> changeMyPassword(@RequestBody ChangePasswordRequest changePasswordRequest)

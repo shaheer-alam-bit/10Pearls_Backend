@@ -56,12 +56,6 @@ public class UserService
         }
     }
 
-    public ResponseEntity<List<User>> fetchAllUsers()
-    {
-        List<User> users = userRepository.findAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
     public ResponseEntity<ChangePasswordResponse> changePassword(String email, String oldPassword, String newPassword, String confirmPassword) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found"));
 

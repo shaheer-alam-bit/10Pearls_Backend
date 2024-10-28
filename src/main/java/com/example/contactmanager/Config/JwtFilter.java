@@ -1,7 +1,6 @@
 package com.example.contactmanager.Config;
 
 import com.example.contactmanager.CustomExceptions.InvalidJWTAuthenticationException;
-import com.example.contactmanager.Repositories.UserRepository;
 import com.example.contactmanager.Services.CustomUserDetailsService;
 import com.example.contactmanager.Services.JwtService;
 import jakarta.servlet.FilterChain;
@@ -9,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +22,15 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter
 {
 
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final JwtService jwtService;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public JwtFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService)
+    {
+        this.jwtService = jwtService;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
