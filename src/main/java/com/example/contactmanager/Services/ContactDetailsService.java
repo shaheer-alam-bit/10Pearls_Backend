@@ -7,32 +7,40 @@ import com.example.contactmanager.Model.ContactDetails;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Repositories.ContactDetailsRepository;
 import com.example.contactmanager.Repositories.UserRepository;
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.property.Email;
+import ezvcard.property.FormattedName;
+import ezvcard.property.Telephone;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ContactDetailsService
-{
-    @Autowired
-    ContactDetailsRepository contactDetailsRepository;
-    @Autowired
-    private UserRepository userRepository;
+public class ContactDetailsService {
 
-    public ResponseEntity<ContactListResponse> getAllContacts()
-    {
+    private final ContactDetailsRepository contactDetailsRepository;
+    private final UserRepository userRepository;
+
+    public ContactDetailsService(ContactDetailsRepository contactDetailsRepository, UserRepository userRepository) {
+        this.contactDetailsRepository = contactDetailsRepository;
+        this.userRepository = userRepository;
+    }
+
+    public ResponseEntity<ContactListResponse> getAllContacts() {
         List<ContactDetails> contacts = contactDetailsRepository.findAll();
         log.info("All contacts fetched successfully");
-        return new ResponseEntity<>(new ContactListResponse(contacts,"Contacts fetched successfully",true), HttpStatus.OK);
+        return new ResponseEntity<>(new ContactListResponse(contacts, "Contacts fetched successfully", true), HttpStatus.OK);
     }
 
     public ResponseEntity<ContactCreateResponse> createContact(Long userId, ContactDetails contactDetails) {
@@ -41,11 +49,10 @@ public class ContactDetailsService
         contactDetails.setUser(user);
         contactDetailsRepository.save(contactDetails);
         log.info("New contact created successfully");
-        return new ResponseEntity<>(new ContactCreateResponse("Contact created Successfully",true), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ContactCreateResponse("Contact created Successfully", true), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<ContactListResponse> getContactsById(Long user_id, int page)
-    {
+    public ResponseEntity<ContactListResponse> getContactsById(Long user_id, int page) {
         User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Pageable pageable = PageRequest.of(page, 5);
@@ -57,7 +64,7 @@ public class ContactDetailsService
         long totalItems = contactPage.getTotalElements();
 
         log.info("A single contact is fetched by the user ID.");
-        return new ResponseEntity<>(new ContactListResponse(usersSavedContacts,"Contacts fetched successfully",true,currentPage,totalPages,totalItems), HttpStatus.OK);
+        return new ResponseEntity<>(new ContactListResponse(usersSavedContacts, "Contacts fetched successfully", true, currentPage, totalPages, totalItems), HttpStatus.OK);
     }
 
     public ResponseEntity<ContactCreateResponse> deleteContact(Long userId, Long contactId) {
@@ -83,26 +90,23 @@ public class ContactDetailsService
     }
 
 
-    public ResponseEntity<ContactDetailResponse> getAContact(Long contact_id)
-    {
+    public ResponseEntity<ContactDetailResponse> getAContact(Long contact_id) {
         ContactDetails contact = contactDetailsRepository.findById(contact_id).orElseThrow(() -> new ContactNotFoundException("Contact not found"));
         log.info("Contact fetched successfully by the Contact ID.");
-        return new ResponseEntity<>(new ContactDetailResponse(contact,"Contact fetched successfully",true), HttpStatus.OK);
+        return new ResponseEntity<>(new ContactDetailResponse(contact, "Contact fetched successfully", true), HttpStatus.OK);
     }
 
-    public ResponseEntity<SearchResponse> findByFirstName(String name)
-    {
-        List<ContactDetails> contact = contactDetailsRepository.findByFirstNameContainingIgnoreCase(name);
+    public ResponseEntity<SearchResponse> findByFirstName(long userID, String name) {
+        List<ContactDetails> contact = contactDetailsRepository.findByUserIdAndFirstNameContainingIgnoreCase(userID,name);
 
-        if (contact.isEmpty())
-        {
+        if (contact.isEmpty()) {
             throw new ContactNotFoundException("Contact not found");
         }
         List<SearchedContacts> searchedList = contact.stream()
-                .map(cont -> new SearchedContacts(cont.getTitle(),cont.getFirstName(),cont.getLastName(), cont.getPersonalPhoneNumber(), cont.getPersonalEmail()))
+                .map(cont -> new SearchedContacts(cont.getTitle(), cont.getFirstName(), cont.getLastName(), cont.getPersonalPhoneNumber(), cont.getPersonalEmail()))
                 .toList();
 
-        return new ResponseEntity<>(new SearchResponse(searchedList,"Contacts Found Successfully",true), HttpStatus.OK);
+        return new ResponseEntity<>(new SearchResponse(searchedList, "Contacts Found Successfully", true), HttpStatus.OK);
     }
 
     public ResponseEntity<ContactUpdateResponse> updateContact(Long contact_id, UpdateContactRequest request) {
@@ -119,6 +123,39 @@ public class ContactDetailsService
 
         contactDetailsRepository.save(contactToUpdate);
         log.info("Contact details updated successfully by the contact ID.");
-        return new ResponseEntity<>(new ContactUpdateResponse("Contact Updated Successfully",true), HttpStatus.OK);
+        return new ResponseEntity<>(new ContactUpdateResponse("Contact Updated Successfully", true), HttpStatus.OK);
+    }
+
+    public ResponseEntity<byte[]> exportContacts(long user_id) {
+        try {
+            User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            List<ContactDetails> contactsList = user.getSavedContacts();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            for (ContactDetails contact : contactsList) {
+                VCard vCard = new VCard();
+
+                vCard.addProperty(new FormattedName(contact.getFirstName() + " " + contact.getLastName()));
+                vCard.addProperty(new Telephone(contact.getPersonalPhoneNumber()));
+                vCard.addProperty(new Email(contact.getPersonalEmail()));
+
+                Ezvcard.write(vCard).go(outputStream);
+            }
+
+            byte[] outputData = outputStream.toByteArray();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contacts.vcf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(outputData.length)
+                    .contentType(MediaType.parseMediaType("text/vcard"))
+                    .body(outputData);
+        } catch (Exception e)
+        {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

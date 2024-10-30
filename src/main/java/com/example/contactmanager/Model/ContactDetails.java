@@ -3,8 +3,6 @@ package com.example.contactmanager.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "contact_details")
 public class ContactDetails

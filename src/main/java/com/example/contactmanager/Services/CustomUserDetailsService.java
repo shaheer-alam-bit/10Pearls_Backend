@@ -3,7 +3,6 @@ package com.example.contactmanager.Services;
 import com.example.contactmanager.CustomExceptions.UserNotFoundException;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +14,12 @@ import java.util.ArrayList;
 public class CustomUserDetailsService implements UserDetailsService
 {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public CustomUserDetailsService(UserRepository userRepository)
+    {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

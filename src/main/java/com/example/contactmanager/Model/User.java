@@ -1,6 +1,9 @@
 package com.example.contactmanager.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -12,15 +15,21 @@ public class User
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @NotBlank(message = "First Name is required")
     private String firstName;
+    @NotBlank(message = "Last Name is required")
     private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password should be at least 8 characters long")
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContactDetails> savedContacts;
-
-    public User () {}
 
     public List<ContactDetails> getSavedContacts() {
         return savedContacts;

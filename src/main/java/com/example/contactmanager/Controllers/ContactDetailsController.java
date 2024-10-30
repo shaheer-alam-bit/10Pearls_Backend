@@ -4,20 +4,22 @@ import com.example.contactmanager.DTO.*;
 import com.example.contactmanager.Model.ContactDetails;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.ContactDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
-
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
 public class ContactDetailsController
 {
-    @Autowired
-    private ContactDetailsService contactDetailsService;
+
+    private final ContactDetailsService contactDetailsService;
+
+    public ContactDetailsController(ContactDetailsService contactDetailsService)
+    {
+        this.contactDetailsService = contactDetailsService;
+    }
 
     @PostMapping("/addContact/{userId}")
     public ResponseEntity<ContactCreateResponse> addContact(@PathVariable long userId, @RequestBody ContactDetails contactDetails)
@@ -53,14 +55,20 @@ public class ContactDetailsController
     }
 
     @GetMapping("/search")
-    public ResponseEntity<SearchResponse> findByName(@RequestParam String name)
+    public ResponseEntity<SearchResponse> findByName(@RequestParam long userId, @RequestParam String name)
     {
-        return contactDetailsService.findByFirstName(name);
+        return contactDetailsService.findByFirstName(userId,name);
     }
 
     @PostMapping("/updateContact/{contactId}")
     public ResponseEntity<ContactUpdateResponse> contactUpdate (@PathVariable long contactId, @RequestBody UpdateContactRequest updateContactRequest)
     {
         return contactDetailsService.updateContact(contactId, updateContactRequest);
+    }
+
+    @GetMapping("/export/{userID}")
+    public ResponseEntity<byte[]> exportContactsAsVcf(@PathVariable long userID)
+    {
+        return contactDetailsService.exportContacts(userID);
     }
 }

@@ -3,6 +3,7 @@ package com.example.contactmanager.Controllers;
 import com.example.contactmanager.DTO.*;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +30,7 @@ public class UserController
     
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> RegisterUser(@RequestBody User user)
+    public ResponseEntity<SignupResponse> RegisterUser(@Valid @RequestBody User user)
     {
         return userService.createUser(user);
     }
