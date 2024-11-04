@@ -1,24 +1,26 @@
 package com.example.contactmanager.DTO;
 
+import com.example.contactmanager.Model.ContactDetails;
+
 import java.util.List;
 
 public class SearchResponse
 {
-    private List<SearchedContacts> results;
+    private List<ContactDetails> results;
     private String message;
     private boolean success;
 
-    public SearchResponse(List<SearchedContacts> results, String message, boolean success) {
+    public SearchResponse(List<ContactDetails> results, String message, boolean success) {
         this.results = results;
         this.message = message;
         this.success = success;
     }
 
-    public List<SearchedContacts> getResults() {
+    public List<ContactDetails> getResults() {
         return results;
     }
 
-    public void setResults(List<SearchedContacts> results) {
+    public void setResults(List<ContactDetails> results) {
         this.results = results;
     }
 

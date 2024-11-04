@@ -102,14 +102,14 @@ public class ContactDetailsService {
         if (contact.isEmpty()) {
             throw new ContactNotFoundException("Contact not found");
         }
-        List<SearchedContacts> searchedList = contact.stream()
-                .map(cont -> new SearchedContacts(cont.getTitle(), cont.getFirstName(), cont.getLastName(), cont.getPersonalPhoneNumber(), cont.getPersonalEmail()))
-                .toList();
+//        List<ContactDetails> searchedList = contact.stream()
+//                .map(cont -> new ContactDetails(cont.getTitle(), cont.getFirstName(), cont.getLastName(), cont.getPersonalPhoneNumber(), cont.getPersonalEmail()))
+//                .toList();
 
-        return new ResponseEntity<>(new SearchResponse(searchedList, "Contacts Found Successfully", true), HttpStatus.OK);
+        return new ResponseEntity<>(new SearchResponse(contact, "Contacts Found Successfully", true), HttpStatus.OK);
     }
 
-    public ResponseEntity<ContactUpdateResponse> updateContact(Long contact_id, UpdateContactRequest request) {
+    public ResponseEntity<ContactUpdateResponse> updateContact(Long contact_id, ContactDetails request) {
         ContactDetails contactToUpdate = contactDetailsRepository.findById(contact_id).orElseThrow(() -> new ContactNotFoundException("Contact Not Found"));
 
         contactToUpdate.setFirstName(request.getFirstName());

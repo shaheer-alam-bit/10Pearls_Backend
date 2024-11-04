@@ -32,6 +32,10 @@ public class UserService
 
     public ResponseEntity<SignupResponse> createUser(User user)
     {
+        if (userRepository.findByEmail(user.getEmail()).isPresent())
+        {
+            throw new IllegalArgumentException("Email is already in use.");
+        }
            String hashedPassword = passwordEncoder.encode(user.getPassword());
            user.setPassword(hashedPassword);
            userRepository.save(user);

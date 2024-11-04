@@ -4,6 +4,7 @@ import com.example.contactmanager.DTO.*;
 import com.example.contactmanager.Model.ContactDetails;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Services.ContactDetailsService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class ContactDetailsController
     }
 
     @PostMapping("/addContact/{userId}")
-    public ResponseEntity<ContactCreateResponse> addContact(@PathVariable long userId, @RequestBody ContactDetails contactDetails)
+    public ResponseEntity<ContactCreateResponse> addContact(@PathVariable long userId,@Valid @RequestBody ContactDetails contactDetails)
     {
         return contactDetailsService.createContact(userId,contactDetails);
     }
@@ -61,7 +62,7 @@ public class ContactDetailsController
     }
 
     @PostMapping("/updateContact/{contactId}")
-    public ResponseEntity<ContactUpdateResponse> contactUpdate (@PathVariable long contactId, @RequestBody UpdateContactRequest updateContactRequest)
+    public ResponseEntity<ContactUpdateResponse> contactUpdate (@PathVariable long contactId, @Valid @RequestBody ContactDetails updateContactRequest)
     {
         return contactDetailsService.updateContact(contactId, updateContactRequest);
     }
