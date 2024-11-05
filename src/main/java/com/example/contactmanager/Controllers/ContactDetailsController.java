@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
@@ -71,5 +72,11 @@ public class ContactDetailsController
     public ResponseEntity<byte[]> exportContactsAsVcf(@PathVariable long userID)
     {
         return contactDetailsService.exportContacts(userID);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<ErrorResponse> importContacts(@RequestParam("file") MultipartFile file, @RequestParam("user_id") long userId)
+    {
+        return contactDetailsService.importContacts(file,userId);
     }
 }

@@ -9,6 +9,8 @@ import com.example.contactmanager.Repositories.ContactDetailsRepository;
 import com.example.contactmanager.Repositories.UserRepository;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
+import ezvcard.parameter.EmailType;
+import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Email;
 import ezvcard.property.FormattedName;
 import ezvcard.property.Telephone;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -136,9 +139,33 @@ public class ContactDetailsService {
             for (ContactDetails contact : contactsList) {
                 VCard vCard = new VCard();
 
-                vCard.addProperty(new FormattedName(contact.getFirstName() + " " + contact.getLastName()));
-                vCard.addProperty(new Telephone(contact.getPersonalPhoneNumber()));
-                vCard.addProperty(new Email(contact.getPersonalEmail()));
+                vCard.addProperty(new FormattedName(contact.getTitle() + contact.getFirstName() + " " + contact.getLastName()));
+
+                Telephone personalPhone = new Telephone(contact.getPersonalPhoneNumber());
+                personalPhone.getTypes().add(TelephoneType.CELL);
+                vCard.addProperty(personalPhone);
+
+                Email personalEmail = new Email(contact.getPersonalEmail());
+                personalEmail.getTypes().add(EmailType.HOME);
+                vCard.addProperty(personalEmail);
+
+                if (contact.getHomePhoneNumber() != null){
+                    Telephone homePhone = new Telephone(contact.getHomePhoneNumber());
+                    homePhone.getTypes().add(TelephoneType.HOME);
+                    vCard.addProperty(homePhone);
+                }
+
+                if (contact.getWorkPhoneNumber() != null){
+                    Telephone workPhone = new Telephone(contact.getWorkPhoneNumber());
+                    workPhone.getTypes().add(TelephoneType.WORK);
+                    vCard.addProperty(workPhone);
+                }
+
+                if (contact.getWorkEmail() != null) {
+                    Email workEmail = new Email(contact.getWorkEmail());
+                    workEmail.getTypes().add(EmailType.WORK);
+                    vCard.addProperty(workEmail);
+                }
 
                 Ezvcard.write(vCard).go(outputStream);
             }
@@ -155,6 +182,63 @@ public class ContactDetailsService {
         } catch (Exception e)
         {
             log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    public ResponseEntity<ErrorResponse> importContacts(MultipartFile file, long user_id)
+    {
+        try {
+            User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            List<VCard> vCardsList = Ezvcard.parse(file.getInputStream()).all();
+
+            for (VCard vcard : vCardsList)
+            {
+                ContactDetails contact = new ContactDetails();
+
+                FormattedName fn = vcard.getFormattedName();
+                if (fn != null)
+                {
+                    String[] arr = fn.getValue().split("[.\\s]+");
+                    contact.setTitle(arr[0]);
+                    contact.setFirstName(arr[1]);
+                    contact.setLastName(arr[2]);
+                }
+
+                List<Telephone> telephoneList = vcard.getTelephoneNumbers();
+                for (Telephone telephone : telephoneList) {
+                    String type = telephone.getParameter("TYPE");
+                    String number = telephone.getText();
+
+                    if (type.equalsIgnoreCase("cell")){
+                        contact.setPersonalPhoneNumber(number);
+                    } else if (type.equalsIgnoreCase("home")){
+                        contact.setHomePhoneNumber(number);
+                    } else if (type.equalsIgnoreCase("work")){
+                        contact.setWorkPhoneNumber(number);
+                    }
+                }
+
+                List<Email> emailList = vcard.getEmails();
+                for (Email email : emailList)
+                {
+                    String type = email.getParameter("TYPE");
+                    String emailAddress = email.getValue();
+
+                    if (type.equalsIgnoreCase("home")){
+                        contact.setPersonalEmail(emailAddress);
+                    } else if (type.equalsIgnoreCase("work")){
+                        contact.setWorkEmail(emailAddress);
+                    }
+                }
+                contact.setUser(user);
+                user.getSavedContacts().add(contact);
+            }
+            userRepository.save(user);
+            return new ResponseEntity<>(new ErrorResponse("Contacts imported successfully",true), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error importing contacts: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
