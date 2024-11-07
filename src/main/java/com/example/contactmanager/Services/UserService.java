@@ -30,6 +30,12 @@ public class UserService
         this.jwtService = jwtService;
     }
 
+    public ResponseEntity<User> getData(long user_id)
+    {
+        User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     public ResponseEntity<SignupResponse> createUser(User user)
     {
         if (userRepository.findByEmail(user.getEmail()).isPresent())

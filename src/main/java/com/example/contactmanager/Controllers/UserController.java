@@ -6,10 +6,7 @@ import com.example.contactmanager.Services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
@@ -22,10 +19,9 @@ public class UserController
         this.userService = userService;
     }
 
-    //Testing API
-    @GetMapping("/data")
-    public ResponseEntity<String> getData() {
-        return ResponseEntity.ok("Hello from Spring Boot");
+    @PostMapping("/getDetails/{user_id}")
+    public ResponseEntity<User> getUserData(@PathVariable long user_id) {
+        return userService.getData(user_id);
     }
     
 
