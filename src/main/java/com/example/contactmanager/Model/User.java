@@ -31,6 +31,15 @@ public class User
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContactDetails> savedContacts;
 
+    public User(){};
+
+    public User(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+
     public List<ContactDetails> getSavedContacts() {
         return savedContacts;
     }

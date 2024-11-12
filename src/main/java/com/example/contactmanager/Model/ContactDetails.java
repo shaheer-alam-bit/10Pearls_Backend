@@ -29,18 +29,18 @@ public class ContactDetails
 
     @Pattern(
             regexp = "^(\\+\\d{1,3}[- ]?)?(03[0-9]{2})[0-9]{7}$",
-            message = "Home Phone number must start with 03"
+            message = "Home Phone number must start with 03 and must be 11 digits long"
     )
     private String homePhoneNumber;
     @Pattern(
             regexp = "^(\\+\\d{1,3}[- ]?)?0213[0-9]{7}$",
-            message = "Work Phone number must start with 0213"
+            message = "Work Phone number must start with 0213 and must be 11 digits long"
     )
     private String workPhoneNumber;
     @NotBlank(message = "Personal Contact number is required")
     @Pattern(
             regexp = "^(\\+\\d{1,3}[- ]?)?(03[0-9]{2})[0-9]{7}$",
-            message = "Personal Phone number must start with 03"
+            message = "Personal Phone number must start with 03 and must be 11 digits long"
     )
     private String personalPhoneNumber;
 
@@ -49,6 +49,19 @@ public class ContactDetails
     @JsonIgnore
     private User user;
 
+    public ContactDetails() {
+    }
+
+    public ContactDetails(String firstName, String lastName, String title, String workEmail, String personalEmail, String homePhoneNumber, String workPhoneNumber, String personalPhoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.title = title;
+        this.workEmail = workEmail;
+        this.personalEmail = personalEmail;
+        this.homePhoneNumber = homePhoneNumber;
+        this.workPhoneNumber = workPhoneNumber;
+        this.personalPhoneNumber = personalPhoneNumber;
+    }
 
     public long getId() {
         return id;
