@@ -7,6 +7,7 @@ import com.example.contactmanager.DTO.SignupResponse;
 import com.example.contactmanager.Model.User;
 import com.example.contactmanager.Repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,7 @@ public class UserService
 
     private final UserRepository userRepository;
 
-   private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private final JwtService jwtService;
 
@@ -89,5 +90,7 @@ public class UserService
         log.info("Password changed Successfully");
         return new ResponseEntity<>(new ChangePasswordResponse("Password Changed Successfully",true), HttpStatus.OK);
     }
+
+
 
 }
