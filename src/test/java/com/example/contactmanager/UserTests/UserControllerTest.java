@@ -1,12 +1,9 @@
 package com.example.contactmanager.UserTests;
 
-import com.example.contactmanager.Controllers.ContactDetailsController;
-import com.example.contactmanager.Controllers.UserController;
-import com.example.contactmanager.CustomExceptions.UserNotFoundException;
-import com.example.contactmanager.DTO.*;
-import com.example.contactmanager.Model.User;
-import com.example.contactmanager.Services.ContactDetailsService;
-import com.example.contactmanager.Services.UserService;
+import com.example.contactmanager.controllers.UserController;
+import com.example.contactmanager.dto.*;
+import com.example.contactmanager.model.User;
+import com.example.contactmanager.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,9 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class UserControllerTest
+class UserControllerTest
 {
-    @Autowired
+
     private MockMvc mockMvc;
 
     @Mock

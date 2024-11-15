@@ -1,16 +1,15 @@
 package com.example.contactmanager.ContactTests;
 
-import com.example.contactmanager.Controllers.ContactDetailsController;
-import com.example.contactmanager.DTO.*;
-import com.example.contactmanager.Model.ContactDetails;
-import com.example.contactmanager.Services.ContactDetailsService;
+import com.example.contactmanager.controllers.ContactDetailsController;
+import com.example.contactmanager.dto.*;
+import com.example.contactmanager.model.ContactDetails;
+import com.example.contactmanager.services.ContactDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -25,16 +24,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ContactDetailsControllerTest
+class ContactDetailsControllerTest
 {
     @Autowired
     private MockMvc mockMvc;

@@ -1,14 +1,14 @@
 package com.example.contactmanager.UserTests;
 
 
-import com.example.contactmanager.CustomExceptions.UserNotFoundException;
-import com.example.contactmanager.DTO.ChangePasswordResponse;
-import com.example.contactmanager.DTO.LoginResponse;
-import com.example.contactmanager.DTO.SignupResponse;
-import com.example.contactmanager.Model.User;
-import com.example.contactmanager.Repositories.UserRepository;
-import com.example.contactmanager.Services.JwtService;
-import com.example.contactmanager.Services.UserService;
+import com.example.contactmanager.customexceptions.UserNotFoundException;
+import com.example.contactmanager.dto.ChangePasswordResponse;
+import com.example.contactmanager.dto.LoginResponse;
+import com.example.contactmanager.dto.SignupResponse;
+import com.example.contactmanager.model.User;
+import com.example.contactmanager.repositories.UserRepository;
+import com.example.contactmanager.services.JwtService;
+import com.example.contactmanager.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest
+class UserServiceTest
 {
     @InjectMocks
     UserService userService;
@@ -41,7 +41,7 @@ public class UserServiceTest
     UserRepository userRepository;
 
     @Test
-    public void getUserDataTest() {
+    void getUserDataTest() {
         long id = 123;
         User user = new User("Shaheer", "Alam", "shaheeralam.alam@gmail.com", "Shaheer.123");
 
@@ -52,7 +52,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testCreateUser_Success() {
+    void testCreateUser_Success() {
         // Arrange
         User user = new User("Shaheer", "Alam", "shaheeralam.alam@gmail.com", "Shaheer.123");
         String hashedPassword = "hashedPassword123";
@@ -72,7 +72,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testVerifyUser_SuccessfulLogin() {
+    void testVerifyUser_SuccessfulLogin() {
         // Arrange
         String email = "shaheeralam.alam@gmail.com";
         String password = "Shaheer.123";
@@ -96,7 +96,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testVerifyUser_IncorrectPassword() {
+    void testVerifyUser_IncorrectPassword() {
         // Arrange
         String email = "shaheeralam.alam@gmail.com";
         String password = "wrongPassword";
@@ -116,7 +116,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testChangePassword_Success() {
+    void testChangePassword_Success() {
         String email = "john.doe@example.com";
         String oldPassword = "oldPassword";
         String newPassword = "newPassword";
@@ -134,7 +134,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testChangePassword_UserNotFound() {
+    void testChangePassword_UserNotFound() {
         String email = "john.doe@example.com";
         String oldPassword = "oldPassword";
         String newPassword = "newPassword";
@@ -149,7 +149,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testChangePassword_WrongOldPassword() {
+    void testChangePassword_WrongOldPassword() {
 
         String email = "john.doe@example.com";
         String oldPassword = "wrongOldPassword";
@@ -168,7 +168,7 @@ public class UserServiceTest
     }
 
     @Test
-    public void testChangePassword_PasswordsDoNotMatch() {
+    void testChangePassword_PasswordsDoNotMatch() {
 
         String email = "john.doe@example.com";
         String oldPassword = "oldPassword";

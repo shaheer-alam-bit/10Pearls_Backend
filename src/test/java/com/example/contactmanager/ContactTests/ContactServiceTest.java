@@ -1,15 +1,15 @@
 package com.example.contactmanager.ContactTests;
 
-import com.example.contactmanager.CustomExceptions.ContactNotFoundException;
-import com.example.contactmanager.DTO.ContactCreateResponse;
-import com.example.contactmanager.DTO.ContactDetailResponse;
-import com.example.contactmanager.DTO.ContactListResponse;
-import com.example.contactmanager.DTO.ContactUpdateResponse;
-import com.example.contactmanager.Model.ContactDetails;
-import com.example.contactmanager.Model.User;
-import com.example.contactmanager.Repositories.ContactDetailsRepository;
-import com.example.contactmanager.Repositories.UserRepository;
-import com.example.contactmanager.Services.ContactDetailsService;
+import com.example.contactmanager.customexceptions.ContactNotFoundException;
+import com.example.contactmanager.dto.ContactCreateResponse;
+import com.example.contactmanager.dto.ContactDetailResponse;
+import com.example.contactmanager.dto.ContactListResponse;
+import com.example.contactmanager.dto.ContactUpdateResponse;
+import com.example.contactmanager.model.ContactDetails;
+import com.example.contactmanager.model.User;
+import com.example.contactmanager.repositories.ContactDetailsRepository;
+import com.example.contactmanager.repositories.UserRepository;
+import com.example.contactmanager.services.ContactDetailsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ContactServiceTest
+class ContactServiceTest
 {
 
     @InjectMocks
@@ -62,7 +62,7 @@ public class ContactServiceTest
     );
 
     @Test
-    public void testGetAllContacts_Success() {
+    void testGetAllContacts_Success() {
 
 
         List<ContactDetails> contacts = Arrays.asList(contact1, contact2);
@@ -74,7 +74,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testCreateContact_Success() {
+    void testCreateContact_Success() {
         long id = 999;
         User mockUser = new User("Shaheer", "Alam", "shaheeralam.alam@gmail.com", "hashedPassword");
         ContactDetails mockContactDetails = new ContactDetails(
@@ -98,7 +98,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testDeleteContact_Success() {
+    void testDeleteContact_Success() {
 
         Long userId = 1L;
         Long contactId = 2L;
@@ -132,7 +132,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testDeleteContact_ContactNotFound() {
+    void testDeleteContact_ContactNotFound() {
         Long userId = 1L;
         Long contactId = 99L;
 
@@ -150,7 +150,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testUpdateContact_Success() {
+    void testUpdateContact_Success() {
 
         Long contactId = 1L;
         ContactDetails existingContact = new ContactDetails(
@@ -193,7 +193,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testGetAContact_Success() {
+    void testGetAContact_Success() {
 
         Long contactId = 1L;
         ContactDetails contact = new ContactDetails(
@@ -218,7 +218,7 @@ public class ContactServiceTest
     }
 
     @Test
-    public void testGetAContact_ContactNotFound() {
+    void testGetAContact_ContactNotFound() {
         Long contactId = 1L;
 
         when(contactDetailsRepository.findById(contactId)).thenReturn(Optional.empty());
