@@ -1,10 +1,8 @@
 package com.example.contactmanager.ContactTests;
 
 import com.example.contactmanager.customexceptions.ContactNotFoundException;
-import com.example.contactmanager.dto.ContactCreateResponse;
-import com.example.contactmanager.dto.ContactDetailResponse;
-import com.example.contactmanager.dto.ContactListResponse;
-import com.example.contactmanager.dto.ContactUpdateResponse;
+import com.example.contactmanager.customexceptions.UserNotFoundException;
+import com.example.contactmanager.dto.*;
 import com.example.contactmanager.model.ContactDetails;
 import com.example.contactmanager.model.User;
 import com.example.contactmanager.repositories.ContactDetailsRepository;
@@ -17,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -228,6 +228,48 @@ class ContactServiceTest
         assertEquals("Contact not found", exception.getMessage());
     }
 
+    @Test
+    void testImportContacts_Success() throws Exception {
+        // Mock data
+        long userId = 1L;
+        User mockUser = new User();
+        mockUser.setId(userId);
+        mockUser.setSavedContacts(new ArrayList<>());
+
+        String vCardContent = "BEGIN:VCARD\n" +
+                "VERSION:4.0\n" +
+                "FN:Mr.John Doe\n" +
+                "TEL;TYPE=cell:1234567890\n" +
+                "TEL;TYPE=work:1234567891\n" +
+                "TEL;TYPE=home:1234567892\n" +
+                "EMAIL;TYPE=home:john.doe@example.com\n" +
+                "EMAIL;TYPE=work:johnwork.doe@example.com\n" +
+                "END:VCARD";
+
+        MockMultipartFile file = new MockMultipartFile("file", "contacts.vcf", "text/vcard",
+                new ByteArrayInputStream(vCardContent.getBytes()));
+
+        // Mock behavior
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+
+        // Call service method
+        ResponseEntity<ErrorResponse> response = contactDetailsService.importContacts(file, userId);
+
+        // Assertions
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Contacts imported successfully", response.getBody().getMessage());
+        assertEquals(1, mockUser.getSavedContacts().size());
+
+        // Verify contact details
+        ContactDetails contact = mockUser.getSavedContacts().get(0);
+        assertEquals("Mr", contact.getTitle());
+        assertEquals("John", contact.getFirstName());
+        assertEquals("Doe", contact.getLastName());
+        assertEquals("1234567890", contact.getPersonalPhoneNumber());
+        assertEquals("john.doe@example.com", contact.getPersonalEmail());
+
+    }
 
 
 }

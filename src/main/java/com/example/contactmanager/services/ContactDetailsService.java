@@ -209,7 +209,7 @@ public class ContactDetailsService {
         if (fn != null)
         {
             String[] arr = fn.getValue().split("[.\\s]+");
-            contact.setTitle(arr[0]);
+            contact.setTitle(arr[0]+".");
             contact.setFirstName(arr[1]);
             contact.setLastName(arr[2]);
         }
