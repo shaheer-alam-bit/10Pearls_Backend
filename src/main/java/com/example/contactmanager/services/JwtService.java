@@ -1,5 +1,6 @@
 package com.example.contactmanager.services;
 
+import com.example.contactmanager.customexceptions.KeyErrorException;
 import com.example.contactmanager.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +28,7 @@ public class JwtService {
             SecretKey myKey = keyGen.generateKey();
             this.secretKey = Base64.getEncoder().encodeToString(myKey.getEncoded());
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new KeyErrorException(e.getMessage());
         }
     }
 

@@ -59,7 +59,7 @@ public class ContactDetailsService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFAULT_MESSAGE));
 
         Pageable pageable = PageRequest.of(page, 5);
-        Page<ContactDetails> contactPage = contactDetailsRepository.findByUserId(userId, pageable);
+        Page<ContactDetails> contactPage = contactDetailsRepository.findByUserId(user.getId(), pageable);
 
         List<ContactDetails> usersSavedContacts = contactPage.getContent();
         int currentPage = contactPage.getNumber();
@@ -191,45 +191,7 @@ public class ContactDetailsService {
 
             for (VCard vcard : vCardsList)
             {
-                ContactDetails contact = new ContactDetails();
-
-                FormattedName fn = vcard.getFormattedName();
-                if (fn != null)
-                {
-                    String[] arr = fn.getValue().split("[.\\s]+");
-                    contact.setTitle(arr[0]);
-                    contact.setFirstName(arr[1]);
-                    contact.setLastName(arr[2]);
-                }
-
-                List<Telephone> telephoneList = vcard.getTelephoneNumbers();
-                for (Telephone telephone : telephoneList) {
-                    String type = telephone.getParameter("TYPE");
-                    String number = telephone.getText();
-
-                    if (type.equalsIgnoreCase("cell")){
-                        contact.setPersonalPhoneNumber(number);
-                    } else if (type.equalsIgnoreCase("home")){
-                        contact.setHomePhoneNumber(number);
-                    } else if (type.equalsIgnoreCase("work")){
-                        contact.setWorkPhoneNumber(number);
-                    }
-                }
-
-                List<Email> emailList = vcard.getEmails();
-                for (Email email : emailList)
-                {
-                    String type = email.getParameter("TYPE");
-                    String emailAddress = email.getValue();
-
-                    if (type.equalsIgnoreCase("home")){
-                        contact.setPersonalEmail(emailAddress);
-                    } else if (type.equalsIgnoreCase("work")){
-                        contact.setWorkEmail(emailAddress);
-                    }
-                }
-                contact.setUser(user);
-                user.getSavedContacts().add(contact);
+                parseContactDetails(vcard,user);
             }
             userRepository.save(user);
             return new ResponseEntity<>(new ErrorResponse("Contacts imported successfully",true), HttpStatus.OK);
@@ -237,5 +199,48 @@ public class ContactDetailsService {
             log.error("Error importing contacts: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    public void parseContactDetails(VCard vcard , User user)
+    {
+        ContactDetails contact = new ContactDetails();
+
+        FormattedName fn = vcard.getFormattedName();
+        if (fn != null)
+        {
+            String[] arr = fn.getValue().split("[.\\s]+");
+            contact.setTitle(arr[0]);
+            contact.setFirstName(arr[1]);
+            contact.setLastName(arr[2]);
+        }
+
+        List<Telephone> telephoneList = vcard.getTelephoneNumbers();
+        for (Telephone telephone : telephoneList) {
+            String type = telephone.getParameter("TYPE");
+            String number = telephone.getText();
+
+            if (type.equalsIgnoreCase("cell")){
+                contact.setPersonalPhoneNumber(number);
+            } else if (type.equalsIgnoreCase("home")){
+                contact.setHomePhoneNumber(number);
+            } else if (type.equalsIgnoreCase("work")){
+                contact.setWorkPhoneNumber(number);
+            }
+        }
+
+        List<Email> emailList = vcard.getEmails();
+        for (Email email : emailList)
+        {
+            String type = email.getParameter("TYPE");
+            String emailAddress = email.getValue();
+
+            if (type.equalsIgnoreCase("home")){
+                contact.setPersonalEmail(emailAddress);
+            } else if (type.equalsIgnoreCase("work")){
+                contact.setWorkEmail(emailAddress);
+            }
+        }
+        contact.setUser(user);
+        user.getSavedContacts().add(contact);
     }
 }

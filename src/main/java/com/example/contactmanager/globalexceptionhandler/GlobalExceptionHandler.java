@@ -2,6 +2,7 @@ package com.example.contactmanager.globalexceptionhandler;
 
 import com.example.contactmanager.customexceptions.ContactNotFoundException;
 import com.example.contactmanager.customexceptions.InvalidJWTAuthenticationException;
+import com.example.contactmanager.customexceptions.KeyErrorException;
 import com.example.contactmanager.customexceptions.UserNotFoundException;
 import com.example.contactmanager.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),false), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(KeyErrorException.class)
+    public ResponseEntity<ErrorResponse> handleKeyErrorException(KeyErrorException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),false), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidJWTAuthenticationException.class)
